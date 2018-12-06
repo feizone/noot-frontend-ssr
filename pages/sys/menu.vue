@@ -204,7 +204,7 @@
 <script>
 import util from "~/libs/util.js";
 export default {
-    layout: 'sys',
+    layout: 'permission',
   name: "menus",
   data() {
     return {

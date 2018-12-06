@@ -16,7 +16,7 @@ export default function ({ $axios, redirect, store }) {
             case 401:
                 store.commit('logout');
                 store.commit('removeMenuList');
-                redirect('/login')
+                redirect('/login?validToken=false')
                 break;
             case 400:
                 if (typeof window !== 'undefined') {

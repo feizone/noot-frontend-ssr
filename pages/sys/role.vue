@@ -79,7 +79,7 @@
 import util from "~/libs/util.js";
 import circleLoading from "~/components/circle-loading.vue";
 export default {
-    layout: 'sys',
+    layout: 'permission',
   name: "role",
   components: {
     circleLoading
@@ -225,24 +225,6 @@ export default {
                 "Button",
                 {
                   props: {
-                    type: "primary",
-                    size: "small"
-                  },
-                  style: {
-                    marginRight: "5px"
-                  },
-                  on: {
-                    click: () => {
-                      this.editDep(params.row);
-                    }
-                  }
-                },
-                "数据权限"
-              ),
-              h(
-                "Button",
-                {
-                  props: {
                     size: "small"
                   },
                   style: {
@@ -292,8 +274,6 @@ export default {
       this.getRoleList();
       // 获取所有菜单权限树
       this.getPermList();
-      // 获取一级部门数据
-      this.getParentList();
     },
     changePage(v) {
       this.pageNumber = v;

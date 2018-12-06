@@ -1,17 +1,5 @@
 <template>
     <div ref="scrollCon" @DOMMouseScroll="handlescroll" @mousewheel="handlescroll" class="tags-outer-scroll-con">
-        <div class="close-all-tag-con">
-            <Dropdown transfer @on-click="handleTagsOption">
-                <Button size="small" type="primary">
-                        选项
-                        <Icon type="md-arrow-dropdown"></Icon>
-                    </Button>
-                <DropdownMenu slot="list">
-                    <DropdownItem name="clearAll">关闭</DropdownItem>
-                    <DropdownItem name="clearOthers">关闭</DropdownItem>
-                </DropdownMenu>
-            </Dropdown>
-        </div>
         <div ref="scrollBody" class="tags-inner-scroll-body" :style="{left: tagBodyLeft + 'px'}">
             <transition-group name="taglist-moving-animation">
                 <Tag type="dot" v-for="(item, index) in pageTagsList" ref="tagsPageOpened" :key="item.name" :name="item.name" @on-close="closePage" @click.native="linkTo(item)" :closable="item.name==='home_index'?false:true" :color="item.children?(item.children[0].name===currentPageName?'primary':'default'):(item.name===currentPageName?'primary':'default')">{{ itemTitle(item) }}</Tag>

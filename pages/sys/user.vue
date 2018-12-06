@@ -8,9 +8,6 @@
                             <Form-item label="用户名称" prop="username">
                               <Input type="text" v-model="searchForm.username" clearable placeholder="请输入用户名" style="width: 200px"/>
                             </Form-item>
-                            <Form-item label="部门" prop="department">
-                              <Cascader v-model="selectDep" :data="department" :load-data="loadData" @on-change="handleChangeDep" change-on-select filterable placeholder="请选择或输入搜索部门" style="width: 200px"></Cascader>
-                            </Form-item>
                             <span v-if="drop">
                             <Form-item label="手机号" prop="phone">
                               <Input type="text" v-model="searchForm.phone" clearable placeholder="请输入手机号" style="width: 200px"/>
@@ -43,9 +40,6 @@
                             <Form-item style="margin-left:-35px;" class="br">
                               <Button @click="handleSearch" type="primary" icon="ios-search">搜索</Button>
                               <Button @click="handleReset" >重置</Button>
-                              <a class="drop-down" @click="dropDown">{{dropDownContent}}
-                                <Icon :type="dropDownIcon"></Icon>
-                              </a>
                             </Form-item>
                         </Form>
                     </Row>
@@ -98,24 +92,8 @@
                     <Radio :label="0">女</Radio>
                   </RadioGroup>
                 </FormItem>
-                <Form-item label="所属部门" prop="departmentTitle">
-                  <Poptip trigger="click" placement="right" title="选择部门" width="250">
-                    <div style="display:flex;">
-                      <Input v-model="userForm.departmentTitle" readonly style="margin-right:10px;"/>
-                      <Button icon="md-trash" @click="clearSelectDep">清空已选</Button>
-                    </div>
-                    <div slot="content" class="tree-bar">
-                      <Input v-model="searchKey" suffix="ios-search" @on-change="searchDp" placeholder="输入部门名搜索"/>
-                      <Tree :data="dataDep" :load-data="loadDataTree" @on-select-change="selectTree"></Tree>
-                      <Spin size="large" fix v-if="dpLoading"></Spin>
-                    </div>
-                  </Poptip>
-                </Form-item>
-                <FormItem label="用户类型" prop="type">
-                  <Select v-model="userForm.type" placeholder="请选择">
-                    <Option :value="0">普通用户</Option>
-                    <Option :value="1">管理员</Option>
-                  </Select>
+                <FormItem label="积分" prop="record">
+                    <Input v-model="userForm.record"/>
                 </FormItem>
                 <FormItem label="角色分配" prop="roles">
                   <Select v-model="userForm.roles" multiple>
@@ -145,7 +123,7 @@
 <script>
 import circleLoading from "~/components/circle-loading.vue";
 export default {
-    layout: 'sys',
+    layout: 'permission',
   name: "user-manage",
   components: {
     circleLoading,
@@ -202,6 +180,7 @@ export default {
       userModalVisible: false,
       modalTitle: "",
       userForm: {
+        record: 0,
         sex: 1,
         type: 0,
         avatar: "https://s1.ax1x.com/2018/05/19/CcdVQP.png",
@@ -247,24 +226,6 @@ export default {
           fixed: "left"
         },
         {
-          title: "头像",
-          key: "avatar",
-          width: 80,
-          align: "center",
-          render: (h, params) => {
-            return h("Avatar", {
-              props: {
-                src: params.row.avatar
-              }
-            });
-          }
-        },
-        {
-          title: "所属部门",
-          key: "departmentTitle",
-          width: 120
-        },
-        {
           title: "手机",
           key: "phone",
           width: 115,
@@ -278,6 +239,11 @@ export default {
           key: "email",
           width: 180,
           sortable: true
+        },
+        {
+          title: "剩余积分",
+          key: "record",
+          width: 120,
         },
         {
           title: "性别",
@@ -495,9 +461,7 @@ export default {
   },
   methods: {
     init() {
-      this.initDepartmentData();
       this.getUserList();
-      this.initDepartmentTreeData();
     },
     initDepartmentData() {
       this.$axios.api.initDepartment().then(res => {
@@ -729,6 +693,7 @@ export default {
             });
           } else {
             // 编辑
+            console.log(this.userForm);
             this.submitLoading = true;
             this.$axios.api.editUser(this.userForm).then(res => {
               this.submitLoading = false;

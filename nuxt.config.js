@@ -49,7 +49,8 @@ module.exports = {
     ** Axios module configuration
     */
     axios: {
-        baseURL: 'http://localhost:7001',
+        //baseURL: 'http://localhost:7001',
+        baseURL: 'http://101.132.131.9',
         headers: {
             'Access-Control-Allow-Origin': '*',
         },

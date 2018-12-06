@@ -17,13 +17,6 @@
           </div>
         </div>
         <div class="header-avator-con">
-          <Dropdown @on-click="handleLanDropdown" class="options">
-            <Icon type="md-globe" :size="24" class="language"></Icon>
-            <DropdownMenu slot="list">
-              <DropdownItem name="zh-CN">中文</DropdownItem>
-              <DropdownItem name="en-US">English</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
           <div class="user-dropdown-menu-con">
             <Row type="flex" justify="end" align="middle" class="user-dropdown-innercon">
               <Dropdown transfer trigger="hover" @on-click="handleClickUserDropdown">
@@ -62,7 +55,8 @@ import Cookies from "js-cookie";
 import util from "~/libs/util.js";
 
 export default {
-    layout: 'common',
+    middleware: 'permission',
+    layout: 'permission',
   components: {
     shrinkableMenu,
     tagsPageOpened,
@@ -139,8 +133,9 @@ export default {
         } else if (name === "loginout") {
           // 退出登录
           this.$store.commit("logout");
+          this.$store.commit("removeMenuList");
           // 强制刷新页面 重新加载router
-          this.$router.push({ path: '/login'})
+          location.reload();
         }
     },
     checkTag(name) {

@@ -84,7 +84,7 @@
 <script>
 
 export default {
-    layout: 'sys',
+    layout: 'permission',
   name: "department",
   data() {
     return {

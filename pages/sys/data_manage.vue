@@ -4,7 +4,6 @@
             <Col>
                 <Card>
                     <Row>
-                        <Alert type="warning">请按照表格字段位置上传excel文件  注意：违约时间的格式为:年-月-日</Alert>
                         <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
                             <Form-item label="姓名" prop="realname">
                               <Input type="text" v-model="searchForm.realname" clearable placeholder="请输入用户名" style="width: 150px"/>
@@ -18,22 +17,10 @@
                         </Form>
                     </Row>
                     <Row class="operation">
-                        <Upload :action="this.$store.state.app.uploadUrl"
-                          :headers="{Authorization: `bearer ${this.$store.state.user.token}`}" 
-                          :on-success="handleSuccess"
-                          :on-error="handleError"
-                          :format="['xlsx']"
-                          :before-upload="handleBeforeUpload"
-                          :max-size="512000000"
-                          :on-format-error="handleFormatError"
-                          :on-exceeded-size="handleMaxSize"
-                          ref="up"
-                          class="upload">
-                            <Button icon="ios-cloud-upload-outline">数据上传</Button>
-                        </Upload>
+                        <Button @click="handleBatchDelete">批量删除</Button>
                     </Row>
                     <Row>
-                        <Table :loading="loading" border :columns="columns" :data="data" sortable="custom" ref="table"></Table>
+                        <Table :loading="loading" border :columns="columns" :data="data" sortable="custom" ref="selection"></Table>
                     </Row>
                     <Row type="flex" justify="end" class="page">
                         <Page :current="searchForm.pageNumber" :total="total" :page-size="searchForm.pageSize" @on-change="changePage" @on-page-size-change="changePageSize" :page-size-opts="[10,20,50]" size="small" show-total show-elevator ></Page>
@@ -63,8 +50,7 @@ export default {
         callback(new Error("手机号格式错误"));
       } else {
         callback();
-      }
-    };
+      } };
     return {
       accessToken: {},
       loading: false,
@@ -85,6 +71,12 @@ export default {
       modalType: 0,
       submitLoading: false,
       columns: [
+        {
+          type: "selection",
+          width: 60,
+          align: "center",
+          fixed: "left"
+        },
         {
           type: "index",
           width: 60,
@@ -121,11 +113,38 @@ export default {
           sortType: "desc",
           width: 100
         },
+        {
+          title: "操作",
+          key: "action",
+          sortType: "desc",
+          width: 80,
+          render: (h, params)=>{
+            return h('div', [
+                h('Button', {
+                props: {
+                    type: 'primary',
+                    size: 'small'
+                },
+                style: {
+                    marginRight: '5px'
+                },
+                on: {
+                    click: () => {
+                        this.handleDelete(params.row.id)
+                    }
+                }
+                }, '删除')
+            ])
+          }
+        }
       ],
       data: [],
       exportData: [],
       total: 0
     };
+  },
+  mounted() {
+      this.getUserList(false, false, false);
   },
   methods: {
     initDepartmentData() {
@@ -245,11 +264,11 @@ export default {
     },
     changePage(v) {
       this.searchForm.pageNumber = v;
-      this.getUserList(true, false, false);
+      this.getUserList(false, false, false);
     },
     changePageSize(v) {
       this.searchForm.pageSize = v;
-      this.getUserList(true, false, false);
+      this.getUserList(false, false, false);
     },
     getUserList(needRecord, showResult, checkCondition) {
       if (!this.searchForm.realname && !this.searchForm.phone && !this.searchForm.idcard && checkCondition) {
@@ -270,8 +289,7 @@ export default {
         if (res.message ===  'success') {
           this.data = res.data.list;
           this.total = res.data.total;
-          if (this.currentRecord !== res.data.record) {
-            this.currentRecord = res.data.record;
+          if (showResult && res.data.list.length) {
             this.$Message.success(`搜索成功, 剩余积分: ${res.data.record}`);
           }
         }
@@ -281,7 +299,36 @@ export default {
     handleSearch() {
       this.searchForm.pageNumber = 1;
       this.searchForm.pageSize = 10;
-      this.getUserList(true, true, true);
+      this.getUserList(false, false, false);
+    },
+    handleBatchDelete() {
+      let rows = this.$refs.selection.getSelection()
+      if (!rows || rows.length === 0){
+        this.$Message.error('请先选择需要删除的数据')
+        return
+      }
+      let ids = rows.map(row => {
+        return row.id
+      })
+      this.handleDelete(ids)
+    },
+    handleDelete(id) {
+     console.log('id ==== ', id)
+      id = Array.isArray(id) ? id : [id]
+      this.$Modal.confirm({
+        title: "确认删除",
+        content: "您确认要删除"+id.length+"条数据",
+        onOk: () => {
+          this.operationLoading = true;
+          this.$axios.api.deleteRecord({id:id}).then(res => {
+            this.operationLoading = false;
+            if (res.message ===  'success') {
+              this.$Message.success("删除成功");
+              this.getUserList(false,false,false);
+            }
+          });
+        }
+      });
     },
     handleReset() {
       this.$refs.searchForm.resetFields();

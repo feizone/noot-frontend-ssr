@@ -4,6 +4,7 @@ import Vue from 'vue';
 
 const app = {
     state: {
+        uploadUrl: 'http://101.132.131.9/api/v1/common/upload',
         cachePage: [],
         lang: '',
         isFullScreen: false,

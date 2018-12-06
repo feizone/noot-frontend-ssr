@@ -2,8 +2,10 @@
   <Row type="flex" justify="center" align="middle" class="login" @keydown.enter.native="submitLogin">
     <Col :xs="{span:22}" style="width: 368px;">
     <Alert type="error" show-icon v-if="error">{{errorMsg}}</Alert>
-  
     <Row class="login-form" v-if="!socialLogining">
+        <Row type="flex" justify="space-between" class="code-row-bg">
+            <h1 style="width: 100%; text-align:center; margin-bottom: 30px">违约数据查询系统</h1>
+        </Row>
           <Form ref="usernameLoginForm" :model="form" :rules="rules" class="form">
             <FormItem prop="username">
               <Input v-model="form.username" prefix="ios-contact" size="large" clearable placeholder="请输入用户名" autocomplete="off" />
@@ -149,7 +151,7 @@ export default {
                             }
                         });
                         this.$store.commit('setTagsList', tagsList);
-                        this.$router.push({ path: "/sys/home" })
+                        this.$router.push({ path: "/business/home" })
                     });
                   } else {
                     this.loading = false;

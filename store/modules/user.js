@@ -10,9 +10,18 @@ const user = {
         fetchedMenu: false,
     },
     mutations: {
+        cleanInfo(state, routes) {
+            state.info = {},
+            state.token = '',
+            state.menuList = [],
+            state.tokenValid = true,
+            state.whiteApiList = [],
+            state.fetchedMenu = false
+        },
         setMenulist(state, routes) {
             state.menuList = routes;
             state.fetchedMenu = true;
+            state.tokenValid = true;
             const tmp = [];
             routes.forEach(element => {
                 if (element.children && element.children.length > 0) {
@@ -22,7 +31,8 @@ const user = {
                                 tmp.push({
                                     title: third.title,
                                     url: third.path,
-                                    path: second.path
+                                    path: second.path,
+                                    method: third.method,
                                 });
                             })
                         }

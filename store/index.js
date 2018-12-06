@@ -56,7 +56,7 @@ const store = new Vuex.Store({
                     }
                 });
                 store.commit('setTagsList', tagsList);
-                return;
+                return redirect('/business/home');
             }
         }
     },
